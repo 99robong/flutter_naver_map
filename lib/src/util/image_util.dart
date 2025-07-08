@@ -10,10 +10,17 @@ class ImageUtil {
 
   static Future<String> saveImage(Uint8List bytes) async {
     final hash = _generateImageHashFromBytes(bytes);
-    late final String path;
+    late String path;
     if (_hashPathMap.containsKey(hash)) {
       path = _hashPathMap[hash]!;
-      log("이미 저장된 이미지입니다. 저장된 path를 반환합니다. $path", name: "ImageSaveUtil");
+      // 파일이 실제로 존재하는지 확인
+      if (!await File(path).exists()) {
+        // 파일이 없으면 새로 만듦
+        path = await _makeFile(hash, bytes);
+        _hashPathMap[hash] = path;
+      } else {
+        log("이미 저장된 이미지입니다. 저장된 path를 반환합니다. $path", name: "ImageSaveUtil");
+      }
     } else {
       path = await _makeFile(hash, bytes);
       _hashPathMap[hash] = path;
