@@ -1,4 +1,5 @@
 import NMapsMap
+import UIKit
 
 internal struct NOverlayImage {
     let path: String
@@ -15,13 +16,13 @@ internal struct NOverlayImage {
         guard let image = UIImage(contentsOfFile: path) else {
             print("⚠️ NOverlayImage: 이미지 파일을 찾을 수 없음: \(path)")
             // fallback: 투명 1x1 이미지 등으로 대체
-            let fallback = UIImage(color: UIColor.clear, size: CGSize(width: 1, height: 1))
+            let fallback = UIImage()
             return NMFOverlayImage(image: fallback)
         }
         guard let pngData = image.pngData(),
             let scaledImage = UIImage(data: pngData, scale: UIScreen.main.scale) else {
             print("⚠️ NOverlayImage: 이미지 변환 실패: \(path)")
-            let fallback = UIImage(color: UIColor.clear, size: CGSize(width: 1, height: 1))
+            let fallback = UIImage()
             return NMFOverlayImage(image: fallback)
         }
         return NMFOverlayImage(image: scaledImage)
