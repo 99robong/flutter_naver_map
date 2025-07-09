@@ -12,10 +12,19 @@ internal struct NOverlayImage {
     }
 
     private func makeOverlayImageWithPath() -> NMFOverlayImage {
-        let image = UIImage(contentsOfFile: path)
-        let scaledImage = UIImage(data: image!.pngData()!, scale: UIScreen.main.scale)
-        let overlayImg = NMFOverlayImage(image: scaledImage!)
-        return overlayImg
+        guard let image = UIImage(contentsOfFile: path) else {
+            print("⚠️ NOverlayImage: 이미지 파일을 찾을 수 없음: \(path)")
+            // fallback: 투명 1x1 이미지 등으로 대체
+            let fallback = UIImage(color: .clear, size: CGSize(width: 1, height: 1))
+            return NMFOverlayImage(image: fallback)
+        }
+        guard let pngData = image.pngData(),
+            let scaledImage = UIImage(data: pngData, scale: UIScreen.main.scale) else {
+            print("⚠️ NOverlayImage: 이미지 변환 실패: \(path)")
+            let fallback = UIImage(color: .clear, size: CGSize(width: 1, height: 1))
+            return NMFOverlayImage(image: fallback)
+        }
+        return NMFOverlayImage(image: scaledImage)
     }
 
     private func makeOverlayImageWithAssetPath() -> NMFOverlayImage {
